@@ -4,9 +4,9 @@ import reflex as rx
 import csv
 import os
 from typing import Any, Dict
+from pydantic import BaseModel
 
-
-class Item(rx.Base):
+class Item(BaseModel):
     """Generic item for table state."""
     id: str
     name: str

@@ -5,7 +5,7 @@ from ...backend.states.dashboard import DashboardState
 from ...components.ui.card import card
 
 
-def stat_card(icon: str, title: str, value: str, subtitle: str, color: str = "blue") -> rx.Component:
+def stat_card(icon: str, title: str, value: rx.Var, subtitle: str, color: str = "blue") -> rx.Component:
     """Individual stat card component."""
     return card(
         rx.vstack(
@@ -33,28 +33,28 @@ def dashboard_stats() -> rx.Component:
         stat_card(
             "dollar-sign",
             "Receita Total",
-            f"R$ {DashboardState.total_revenue:.2f}",
+            "R$ " + DashboardState.total_revenue.to_string(),
             "+12% vs mês anterior",
             "green"
         ),
         stat_card(
             "users",
             "Usuários Totais",
-            str(DashboardState.total_users),
+            DashboardState.total_users.to_string(),
             f"12 ativos",
             "blue"
         ),
         stat_card(
             "credit-card",
             "PIX Processados",
-            str(DashboardState.total_transactions),
+            DashboardState.total_transactions.to_string(),
             "Hoje: 47 transações",
             "purple"
         ),
         stat_card(
             "gift",
             "Gift Cards Vendidos",
-            str(DashboardState.total_gift_cards_sold),
+            DashboardState.total_gift_cards_sold.to_string(),
             "Este mês: 156 unidades",
             "orange"
         ),

@@ -2,10 +2,10 @@
 
 from typing import Optional
 from datetime import datetime
-import reflex as rx
+from pydantic import BaseModel
 
 
-class User(rx.Base):
+class User(BaseModel):
     """User model for gift card system."""
     id: str
     telegram_id: str
@@ -21,7 +21,7 @@ class User(rx.Base):
     risk_score: float  # 0-100 for fraud detection
 
 
-class Transaction(rx.Base):
+class Transaction(BaseModel):
     """Transaction model for PIX and gift card purchases."""
     id: str
     user_id: str
@@ -37,7 +37,7 @@ class Transaction(rx.Base):
     metadata: dict = {}
 
 
-class GiftCard(rx.Base):
+class GiftCard(BaseModel):
     """Gift card product model."""
     id: str
     name: str
@@ -53,7 +53,7 @@ class GiftCard(rx.Base):
     image_url: Optional[str] = None
 
 
-class BotMetrics(rx.Base):
+class BotMetrics(BaseModel):
     """Bot performance metrics."""
     id: str
     date: datetime

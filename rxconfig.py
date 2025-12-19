@@ -1,4 +1,5 @@
 import reflex as rx
+import os
 
 tailwind_config = {
     "plugins": ["@tailwindcss/typography"],
@@ -47,9 +48,16 @@ tailwind_config = {
     },
 }
 
+###### CONFIGURAÇÃO DO BANCO DE DADOS PARA DESENVOLVIMENTO SEM HOT RELOAD
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "telegramaio.db")
+###### FIM
+
 config = rx.Config(
     app_name="dashboard",
-    db_url="sqlite:///telegramaio.db",
+    # Usa o caminho absoluto externo
+    db_url=f"sqlite:///{DB_PATH}", #ALTERAR QUANDO NECESSARIO PARA PRODUÇÃO (ATUALMENTE BUSCANDO UMA PASTA ANTES DO PROJETO PARA EVITAR CONFLITO COM HOT RELOADING)
     plugins=[
         rx.plugins.TailwindV4Plugin(tailwind_config),
     ],

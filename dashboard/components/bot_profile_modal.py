@@ -12,6 +12,14 @@ class BotProfileModalState(rx.State):
     has_bot: bool = False
     loading: bool = False
     
+    def set_is_open(self, value: bool):
+        """Set modal open state."""
+        self.is_open = value
+
+    def set_bot_token(self, value: str):
+        """Set bot token value."""
+        self.bot_token = value
+
     def open_modal(self):
         """Open the modal."""
         self.is_open = True
