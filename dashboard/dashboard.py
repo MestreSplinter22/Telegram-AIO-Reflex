@@ -19,6 +19,7 @@ from .backend.api import register_all_routes
 import asyncio
 from contextlib import asynccontextmanager
 from .backend.telegram.startup import startup_telegram_bot, shutdown_telegram_bot
+from dashboard.pages.flow_builder import flow_builder_page
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

@@ -82,6 +82,7 @@ def sidebar_item(text: str, url: str) -> rx.Component:
                 ("Gift Cards", sidebar_item_icon("gift")),
                 ("Bot Management", sidebar_item_icon("bot")),
                 ("Settings", sidebar_item_icon("settings")),
+                ("Bot Flow Builder", sidebar_item_icon("git-merge")),
                 sidebar_item_icon("layout-dashboard"),
             ),
             rx.text(text, size="3", weight="regular"),
@@ -130,6 +131,7 @@ def sidebar() -> rx.Component:
         "/transactions",
         "/products",
         "/bot-management",
+        "/flows",
         "/settings",
     ]
 

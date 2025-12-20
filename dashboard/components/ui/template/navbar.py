@@ -105,6 +105,7 @@ def menu_button() -> rx.Component:
         "/transactions",
         "/products",
         "/bot-management",
+        "/flows",
         "/settings",
     ]
 
