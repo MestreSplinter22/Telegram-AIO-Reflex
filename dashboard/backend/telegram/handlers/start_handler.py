@@ -1,29 +1,30 @@
+# dashboard/backend/telegram/handlers/start_handler.py
 import json
-import os
-from aiogram import Router, types
+from aiogram import Router, types , F
 from aiogram.filters import Command
 from ..common.message_handler import send_template_message
 
 router = Router()
 
-# Função auxiliar para carregar o JSON (pode ir para um utils)
-def load_flow(flow_name):
-    # Ajuste o caminho conforme sua estrutura
-    path = f"dashboard/backend/telegram/flows/{flow_name}.json"
+def load_flow_data():
+    path = "dashboard/backend/telegram/flows/start_flow.json"
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 @router.message(Command("start"))
 async def start_command(message: types.Message):
-    # 1. Carregar configuração
-    flow_data = load_flow("start_flow")
-    screen_config = flow_data["welcome_screen"]
+    data = load_flow_data()
     
-    # 2. Preparar contexto (dados dinâmicos)
-    user_context = {
-        "name": message.from_user.full_name,
-        "id": message.from_user.id
-    }
+    # Pega o nome da tela inicial definido no JSON
+    initial_key = data.get("initial_screen", "language_selection")
+    screen_config = data["screens"][initial_key]
     
-    # 3. Delegar para o sistema common
-    await send_template_message(message, screen_config, context=user_context)
+    await send_template_message(message, screen_config, context={"name": message.from_user.first_name})
+
+@router.message(F.video)
+async def capture_video_id(message: types.Message):
+    file_id = message.video.file_id
+    await message.answer(
+        f"📹 <b>ID do Vídeo para seu JSON:</b>\n\n<code>{file_id}</code>", 
+        parse_mode="HTML"
+    )

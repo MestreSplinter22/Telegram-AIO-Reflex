@@ -1,16 +1,92 @@
-
 {
-  "welcome_screen": {
-    "text": "👋 Olá {name}!\nEscolha uma opção:",
-    "image_url": "https://i.ibb.co/rmn2VqT/akst.jpg",
-    "buttons": [
-      [
-        { "text": "🛒 Shopping", "callback": "goto_shopping" },
-        { "text": "💰 Saldo", "callback": "show_balance" }
-      ],
-      [
-        { "text": "🔗 Bot Externo", "url": "https://t.me/buscasfacilbot" }
+  "initial_screen": "language_selection",
+  "screens": {
+    "language_selection": {
+      "text": "🗣 Choose your language / Escolha seu idioma / Elige tu idioma:\n🌍👇",
+      "buttons": [
+        [
+          { "text": "🇺🇸 English", "callback": "goto_age_check_en" },
+          { "text": "🇧🇷 Português", "callback": "goto_age_check_pt" },
+          { "text": "🇪🇸 Español", "callback": "goto_age_check_es" }
+        ]
       ]
-    ]
+    },
+    "age_check_pt": {
+      "text": "Falaaa <b>{name}</b>! Seja bem vindo ao BOT do VIP INC&ST CLUB! 🔥\n\n🚨 <b>Atenção!</b>\nVocê está a UM passo de entrar no grupo mais insano e exclusivo do Telegram — onde rolam os segredos que ninguém tem coragem de postar em público.\n\nMas antes... preciso saber uma coisinha 👇\n\n📌 <b>Você tem mais de 18 anos?</b>\n(Tudo aqui é underground e só pra maiores 👀)",
+      "buttons": [
+        [
+          { "text": "Sim, eu sou 😎", "callback": "goto_sales_pitch_pt" }
+        ]
+      ]
+    },
+"sales_pitch_pt": [
+      {
+        "video_url": "BAACAgEAAxkBAAIGLmlG66y91Lpxw3rc9edUiFS0fqv0AAIsBgACbGw4RvxPildUNm2tNgQ",
+        "text": "Showw irmão! 😃\n\nNesse bot você fará sua assinatura para a nossa comunidade VIP!\n\n🚨 <b>Aqui no VIP o papo é reto:</b>\n\n🎥 +15.000 vídeos proibidos, raros e 100% reais 😈\n🥷 Conteúdo que vazou, foi gravado escondido ou simplesmente sumiu da internet 💨"
+      },
+      {
+        "video_url": "BAACAgEAAxkBAAIGJmlG62TqYsMp3emfgkav-XmOO1t4AAIqBgACbGw4Rg9GvhoFrregNgQ",
+        "text": "👇🏻 <b>Olha o que te espera no VIP:</b>\n🔥🔥🔥\n\n🚨 <b>APENAS Mídias RARAS — nunca vistas na internet</b> 🚨\nSÓ VENDO PRA CRER! 😵‍💫\n\n🎥 Flagras reais. Gravado escondido. Nada encenado, só transa sem censura com familiares passando dos limites 😈\n\n<b>{name}</b>, Você ganhou 50% de desconto para assinar o nosso plano VITÁLICIO😃\n\n<b>Selecione o plano que você deseja assinar 👇</b>",
+        "buttons": [
+          [
+            { "text": "7 DIAS VIP | R$ 14,90", "callback": "goto_upsell_weekly_pt" }
+          ],
+          [
+            { "text": "1 MÊS VIP | R$ 17,90", "callback": "goto_upsell_monthly_pt" }
+          ],
+          [
+            { "text": "VITALÍCIO | DE R$ 38 POR R$ 23,90", "callback": "goto_upsell_lifetime_pt" }
+          ]
+        ]
+      }
+    ],
+    "upsell_weekly_pt": {
+      "video_url": "BAACAgEAAxkBAAIGLGlG66eQWYAw8I_c7L9ueYcuJJTTAAIrBgACbGw4Rjsl3lq8D-BFNgQ",
+      "text": "🔥<b>Oferta Exclusiva</b>🔥\n\n✅ Por apenas <b>R$6.90</b> você libera \n🔞 <b>+20 GRUPOS PR0IB1DS</b> -\naqueles que nunca ficam só no básico.\n\nO ACESSO AO COFRE É  V I T A L Í C I O\n\n🚨 <b>ULTIMA VAGA DISPONÍVEL!!!</b>\n⚡️ É só marcar essa opção agora \n🚀e levar tudo na hora, \nsem pagar frete nem nada a mais.",
+      "buttons": [
+        [
+          { "text": "SIIIMM ✅ (Adicionar + R$6,90)", "callback": "goto_payment_weekly_plus" },
+          { "text": "NÃO , Obrigado ❌", "callback": "goto_payment_weekly_normal" }
+        ]
+      ]
+    },
+    "payment_weekly_plus": {
+      "text": "🌟 <b>Você selecionou o seguinte plano:</b>\n\n🎁 <b>Plano:</b> \n🔥 Pacote SEMANAL + COFRE SECRETO 🔐🔞\n💰 <b>Valor: R$21,80</b>\n\n💠 <b>Pague via Pix</b>\nCHAVE PIX email:\n<code>vip.acesso2026@gmail.com</code>\n\n(toque na chave acima para copiar)\n\n🌟 <b>Após o pagamento:</b>\n👇 Clique no botão abaixo para enviar o comprovante ao nosso suporte.\n🚀 Enviaremos o acesso ao grupo VIP no mesmo instante!",
+      "buttons": [
+        [
+          { "text": "ENVIAR COMPROVANTE 📤", "url": "https://t.me/SUPINCSTCLUB2" }
+        ],
+        [
+            { "text": "⬅️ Voltar", "callback": "goto_sales_pitch_pt" }
+        ]
+      ]
+    },
+    "payment_weekly_normal": {
+        "text": "🌟 <b>Você selecionou o seguinte plano:</b>\n\n🎁 <b>Plano:</b> \n🔥 Pacote SEMANAL\n💰 <b>Valor: R$14,90</b>\n\n💠 <b>Pague via Pix</b>\nCHAVE PIX email:\n<code>vip.acesso2026@gmail.com</code>\n\n(toque na chave acima para copiar)\n\n🌟 <b>Após o pagamento:</b>\n👇 Clique no botão abaixo para enviar o comprovante ao nosso suporte.",
+        "buttons": [
+          [
+            { "text": "ENVIAR COMPROVANTE 📤", "url": "https://t.me/SUPINCSTCLUB2" }
+          ],
+          [
+            { "text": "⬅️ Voltar", "callback": "goto_sales_pitch_pt" }
+        ]
+        ]
+      },
+    "age_check_en": {
+      "text": "🚨 <b>Warning!</b>\nYou are ONE step away...\n\n📌 <b>Are you over 18?</b>",
+      "buttons": [
+        [
+          { "text": "Yes, I am 😎", "callback": "goto_sales_pitch_en" }
+        ]
+      ]
+    },
+    "age_check_es": {
+       "text": "🚨 <b>¡Atención!</b>\nEstás a UN paso...\n\n📌 <b>¿Tienes más de 18 años?</b>",
+       "buttons": [
+         [
+           { "text": "Sí, lo soy 😎", "callback": "goto_sales_pitch_es" }
+         ]
+       ]
+    }
   }
 }

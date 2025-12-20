@@ -6,6 +6,8 @@ from aiogram.types import Message
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from dashboard.backend.telegram.handlers.start_handler import router as start_router
+from dashboard.backend.telegram.handlers.flow_handler import router as flow_router
+
 
 # Configurar logging
 logging.basicConfig(
@@ -57,6 +59,7 @@ async def start_telegram_bot():
         # Registrar handlers no dispatcher
         logger.info("Registrando handlers...")
         dp.include_router(start_router)
+        dp.include_router(flow_router)
         
         # Iniciar o polling
         logger.info("Iniciando polling...")

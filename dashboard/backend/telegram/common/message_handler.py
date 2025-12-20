@@ -7,49 +7,53 @@ async def send_template_message(
     context: dict = None
 ):
     """
-    Envia uma mensagem baseada em um template JSON.
-    
-    Args:
-        message: Objeto Message ou CallbackQuery do aiogram
-        template: Dicionário contendo a configuração da mensagem (do JSON)
-        context: Dicionário com variáveis para substituir no texto (ex: {name: 'João'})
+    Envia uma mensagem (Texto, Foto ou Vídeo) baseada no JSON.
     """
     # Se for CallbackQuery, pegamos a mensagem original
-    if isinstance(message, types.CallbackQuery):
-        target = message.message
-    else:
-        target = message
+    target = message.message if isinstance(message, types.CallbackQuery) else message
 
     # 1. Processar Texto
     text = template.get("text", "")
     if context:
         try:
             text = text.format(**context)
-        except KeyError as e:
-            text = text # Fallback se faltar variável
+        except KeyError:
+            pass # Ignora se faltar variável
             
     # 2. Construir Teclado
     markup = None
     if "buttons" in template:
         markup = build_keyboard(template["buttons"])
 
-    # 3. Enviar (com ou sem imagem)
+    # 3. Verificar Mídia (Vídeo ou Imagem)
+    video_url = template.get("video_url")
     image_url = template.get("image_url")
     
-    if image_url:
-        # Se tem imagem, envia photo (ou edita se possível, mas photo geralmente envia nova)
-        # Para fluxos complexos, sugerido deletar a anterior e enviar nova para manter "limpo"
+    # --- CENÁRIO 1: VÍDEO ---
+    if video_url:
+        await target.answer_video(
+            video=video_url,
+            caption=text,
+            reply_markup=markup,
+            parse_mode="HTML"
+        )
+
+    # --- CENÁRIO 2: FOTO ---
+    elif image_url:
         await target.answer_photo(
             photo=image_url,
             caption=text,
             reply_markup=markup,
             parse_mode="HTML"
         )
+
+    # --- CENÁRIO 3: APENAS TEXTO ---
     else:
-        # Apenas texto
+        # Se você quiser usar o truque do link escondido (badge de imagem)
+        # você pode colocar o <a href> no texto do JSON, mas o answer_photo acima é mais seguro.
         await target.answer(
             text=text,
             reply_markup=markup,
             parse_mode="HTML",
-            disable_web_page_preview=False
+            disable_web_page_preview=False 
         )
