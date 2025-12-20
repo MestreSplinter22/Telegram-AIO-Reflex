@@ -1,0 +1,16 @@
+
+{
+  "welcome_screen": {
+    "text": "👋 Olá {name}!\nEscolha uma opção:",
+    "image_url": "https://i.ibb.co/rmn2VqT/akst.jpg",
+    "buttons": [
+      [
+        { "text": "🛒 Shopping", "callback": "goto_shopping" },
+        { "text": "💰 Saldo", "callback": "show_balance" }
+      ],
+      [
+        { "text": "🔗 Bot Externo", "url": "https://t.me/buscasfacilbot" }
+      ]
+    ]
+  }
+}
