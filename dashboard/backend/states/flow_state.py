@@ -181,28 +181,46 @@ class FlowState(rx.State):
         self.new_screen_name = value
 
     def save_current_screen(self):
+        # --- CORREÇÃO: Sincronização do Modo Visual ---
+        # Se estiver no modo visual, atualizamos o texto JSON (current_screen_content)
+        # com base nos blocos editados (editor_blocks) antes de prosseguir.
+        if self.visual_editor_mode:
+            final_data = self.editor_blocks
+            # Se originalmente era um dicionário único e continua com 1 bloco, salva como dict
+            if len(self.editor_blocks) == 1 and self.original_data_type == "dict":
+                final_data = self.editor_blocks[0]
+            
+            self.current_screen_content = json.dumps(final_data, indent=2, ensure_ascii=False)
+        # -----------------------------------------------
+
         try:
+            # Agora o current_screen_content está atualizado, independente do modo
             new_data = json.loads(self.current_screen_content)
+            
             if "screens" not in self.full_flow: self.full_flow["screens"] = {}
             self.full_flow["screens"][self.selected_screen_key] = new_data
             
             with open(FLOW_FILE_PATH, "w", encoding="utf-8") as f:
                 json.dump(self.full_flow, f, indent=2, ensure_ascii=False)
                 
-            self.status_message = "✅ Salvo!"
+            self.status_message = "✅ Salvo com sucesso!"
             self.screen_keys = sorted(list(self.full_flow["screens"].keys()))
             self.calculate_interactive_layout()
             
+            # Se salvou via modo texto, atualiza os blocos visuais para não quebrar se trocar de aba
             if not self.visual_editor_mode:
                 if isinstance(new_data, list):
                     self.editor_blocks = new_data
+                    self.original_data_type = "list"
                 else:
                     self.editor_blocks = [new_data]
+                    self.original_data_type = "dict"
 
         except json.JSONDecodeError:
-            self.status_message = "❌ JSON Inválido"
+            self.status_message = "❌ JSON Inválido. Corrija o texto antes de salvar."
         except Exception as e:
-            self.status_message = f"❌ Erro: {e}"
+            self.status_message = f"❌ Erro ao salvar: {e}"
+            print(f"Erro Save: {e}")
 
     # --- NOVO LAYOUT PARA REACT FLOW ---
     def calculate_interactive_layout(self):
