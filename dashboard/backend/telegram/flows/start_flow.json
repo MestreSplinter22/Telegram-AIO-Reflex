@@ -136,6 +136,36 @@
     "teste": {
       "text": "Nova tela.test..",
       "buttons": []
-    }
+    },
+    "sales_pitch_en": [
+      {
+        "video_url": "BAACAgEAAxkBAAIGLmlG66y91Lpxw3rc9edUiFS0fqv0AAIsBgACbGw4RvxPildUNm2tNgQ",
+        "text": "Let's go, bro! 😃\n\nThis bot is where you join our VIP community!\n\n🚨 <b>Straight talk here at VIP:</b>\n\n🎥 15,000+ banned, rare, and 100% real videos 😈\n🥷 Leaked content, hidden cams, and stuff that's been wiped from the internet 💨"
+      },
+      {
+        "video_url": "BAACAgEAAxkBAAIGJmlG62TqYsMp3emfgkav-XmOO1t4AAIqBgACbGw4Rg9GvhoFrregNgQ",
+        "text": "👇🏻 <b>Check out what's waiting for you inside:</b>\n🔥🔥\n\n🚨 <b>ONLY RARE Media — never seen anywhere else</b> 🚨\nYOU HAVE TO SEE IT TO BELIEVE IT! 😵‍💫\n\n🎥 Real catches. Hidden cams. Nothing scripted—just uncensored action with family members crossing the line 😈\n\n<b>{name}</b>, you've just unlocked 50% OFF for our LIFETIME plan! 😃\n\n<b>Select your plan below 👇</b>",
+        "buttons": [
+          [
+            {
+              "text": "7 DAYS VIP | $ 14.90",
+              "callback": "goto_upsell_weekly_en"
+            }
+          ],
+          [
+            {
+              "text": "1 MONTH VIP | $ 17.90",
+              "callback": "goto_upsell_monthly_en"
+            }
+          ],
+          [
+            {
+              "text": "LIFETIME | FROM $ 38 TO $ 23.90",
+              "callback": "goto_upsell_lifetime_en"
+            }
+          ]
+        ]
+      }
+    ]
   }
 }
