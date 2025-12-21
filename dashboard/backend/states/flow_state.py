@@ -15,17 +15,17 @@ class FlowState(rx.State):
     editor_blocks: List[Dict[str, Any]] = [] 
     original_data_type: str = "dict"
     
-    # Variável temporária para o input de Badge
+    # Input Badge
     temp_badge_url: str = ""
     
     current_screen_content: str = ""
     new_screen_name: str = ""
     status_message: str = ""
     
-    # Layout Interativo
-    graph_nodes: List[Dict[str, Any]] = []
-    svg_content: str = ""
-    canvas_height: str = "2000px"
+    # --- REACT FLOW STATES ---
+    # Substituímos graph_nodes e svg_content por estas listas
+    nodes: List[Dict[str, Any]] = []
+    edges: List[Dict[str, Any]] = []
 
     def set_temp_badge_url(self, value: str):
         self.temp_badge_url = value
@@ -49,16 +49,16 @@ class FlowState(rx.State):
                 self.calculate_interactive_layout()
             except Exception as e:
                 self.status_message = f"Erro Load: {str(e)}"
+                print(e)
 
     def select_screen(self, key: str):
         self.selected_screen_key = key
-        # Se a tela não existir, cria um padrão na memória
+        
+        # Recupera dados ou cria padrão
         data = self.full_flow.get("screens", {}).get(key, {"text": "Nova Tela", "buttons": []})
         
-        # Prepara conteúdo RAW
         self.current_screen_content = json.dumps(data, indent=2, ensure_ascii=False)
         
-        # Prepara conteúdo ESTRUTURADO (Visual)
         if isinstance(data, list):
             self.editor_blocks = data
             self.original_data_type = "list"
@@ -66,23 +66,24 @@ class FlowState(rx.State):
             self.editor_blocks = [data]
             self.original_data_type = "dict"
             
+        # Recalcula o layout para atualizar o estilo do nó selecionado
         self.calculate_interactive_layout()
 
-    # --- AÇÃO FALTANTE: CRIAR NOVA TELA ---
+    # Evento de clique no Nó do ReactFlow
+    def on_node_click(self, node_id: str):
+        # Removemos a lógica de extração .get("id"), pois já é a string
+        print(f"DEBUG: Clique no nó recebido: {node_id}") # Para você ver no terminal
+        if node_id:
+            self.select_screen(node_id)
+
     def add_new_screen(self):
         key = self.new_screen_name.strip()
         if not key: return
-        
-        # Seleciona a chave (isso vai carregar o default "Nova Tela" no editor)
         self.select_screen(key)
-        
-        # Salva imediatamente para persistir no arquivo
         self.save_current_screen()
-        
         self.new_screen_name = ""
 
-    # --- EDITOR VISUAL ---
-
+    # --- EDITOR VISUAL (Mantido igual) ---
     def toggle_editor_mode(self):
         self.visual_editor_mode = not self.visual_editor_mode
         if self.visual_editor_mode:
@@ -114,7 +115,6 @@ class FlowState(rx.State):
             block = self.editor_blocks[index]
             if "image_url" in block: del block["image_url"]
             if "video_url" in block: del block["video_url"]
-            
             if type == "image": block["image_url"] = "https://..."
             elif type == "video": block["video_url"] = "https://..."
             self.editor_blocks[index] = block
@@ -123,19 +123,13 @@ class FlowState(rx.State):
         if 0 <= index < len(self.editor_blocks):
             self.editor_blocks[index][key] = value
 
-    # --- BADGES ---
     def insert_badge(self, index: int):
-        """Insere o HTML da badge usando a variável temporária do estado."""
-        if not self.temp_badge_url:
-            return
-            
+        if not self.temp_badge_url: return
         if 0 <= index < len(self.editor_blocks):
             current_text = self.editor_blocks[index].get("text", "")
             badge_html = f"<a href='{self.temp_badge_url}'>&#8205;</a>"
             self.editor_blocks[index]["text"] = badge_html + current_text
             self.temp_badge_url = ""
-
-    # --- BOTÕES ---
 
     def add_button_row(self, block_index: int):
         if 0 <= block_index < len(self.editor_blocks):
@@ -173,13 +167,10 @@ class FlowState(rx.State):
                 btn[field] = value
             self.editor_blocks[block_idx]["buttons"][row_idx][btn_idx] = btn
 
-    # --- SALVAMENTO ---
-
     def save_visual_changes(self):
         final_data = self.editor_blocks
         if len(self.editor_blocks) == 1 and self.original_data_type == "dict":
             final_data = self.editor_blocks[0]
-        
         self.current_screen_content = json.dumps(final_data, indent=2, ensure_ascii=False)
         self.save_current_screen()
 
@@ -213,30 +204,41 @@ class FlowState(rx.State):
         except Exception as e:
             self.status_message = f"❌ Erro: {e}"
 
-    # --- LAYOUT V5 (SCROLL CORRIGIDO) ---
+    # --- NOVO LAYOUT PARA REACT FLOW ---
     def calculate_interactive_layout(self):
+        """
+        Calcula nós e arestas compatíveis com a estrutura do React Flow.
+        Mantém a lógica de BFS para distribuir as posições X e Y.
+        """
         screens_raw = self.full_flow.get("screens", {})
-        if not screens_raw: return
+        if not screens_raw: 
+            self.nodes = []
+            self.edges = []
+            return
 
         screens = {str(k).strip(): v for k, v in screens_raw.items()}
 
-        NODE_WIDTH = 220
-        NODE_HEIGHT = 100
-        GAP_X = 60
-        GAP_Y = 160
-        START_X = 600
+        # Dimensões para cálculo de posição (Grid)
+        NODE_WIDTH = 250
+        NODE_HEIGHT = 150 
+        GAP_X = 50
+        GAP_Y = 100
+        START_X = 100
         START_Y = 50
 
-        connections = []
+        # Listas temporárias
+        temp_edges = []
         adjacency = {} 
         all_nodes_set = set(screens.keys())
         
+        # 1. Identificar Conexões (Edges)
         for screen_id, content in screens.items():
             if screen_id not in adjacency: adjacency[screen_id] = []
             
             found_buttons = []
             stack = [content]
             
+            # Varredura profunda por botões
             while stack:
                 curr = stack.pop()
                 if isinstance(curr, dict):
@@ -247,19 +249,33 @@ class FlowState(rx.State):
                 elif isinstance(curr, list):
                     for item in curr: stack.append(item)
             
-            for btn in found_buttons:
+            # Criar Edges
+            for i, btn in enumerate(found_buttons):
                 raw_target = btn["callback"].replace("goto_", "").strip()
                 target = raw_target.split()[0] if raw_target else raw_target
                 label = btn.get("text", "Próximo").strip()
-                label_short = label[:18] + "..." if len(label) > 18 else label
-
-                connections.append({"source": screen_id, "target": target, "label": label_short})
+                
+                # Edge ID único
+                edge_id = f"e-{screen_id}-{target}-{i}"
+                
+                # Verifica se o target existe (Link Quebrado)
+                is_broken = target not in screens
+                
+                temp_edges.append({
+                    "id": edge_id,
+                    "source": screen_id,
+                    "target": target,
+                    "label": label,
+                    "animated": True,
+                    "style": {"stroke": "#ef4444", "strokeWidth": 2} if is_broken else {"stroke": "#94a3b8"},
+                    "labelStyle": {"fill": "#ef4444", "fontWeight": 700} if is_broken else {"fill": "#64748b"},
+                })
+                
                 adjacency[screen_id].append(target)
                 if target not in all_nodes_set:
                     all_nodes_set.add(target)
-                    if target not in adjacency: adjacency[target] = []
 
-        # BFS
+        # 2. Algoritmo BFS para Níveis (Layout Hierárquico)
         start_node = self.full_flow.get("initial_screen", "").strip()
         if start_node not in screens and screens: start_node = next(iter(screens))
 
@@ -274,6 +290,7 @@ class FlowState(rx.State):
             levels[current] = level
             for child in adjacency.get(current, []): queue.append((child, level + 1))
 
+        # Adicionar nós órfãos no nível 1
         for node in all_nodes_set:
             if node not in visited: levels[node] = 1
 
@@ -282,75 +299,46 @@ class FlowState(rx.State):
             if level not in nodes_by_level: nodes_by_level[level] = []
             nodes_by_level[level].append(node)
 
-        final_nodes = []
-        node_coords = {}
-        
-        max_y = 0
-        max_x = 0
+        # 3. Construir Nós do ReactFlow
+        final_rf_nodes = []
         
         for level, level_nodes in nodes_by_level.items():
+            # Centralizar a linha horizontalmente
             row_width = len(level_nodes) * (NODE_WIDTH + GAP_X)
-            start_x_level = START_X - (row_width / 2)
+            start_x_level = START_X # Você pode centralizar dinamicamente se quiser
             
             for i, node_id in enumerate(level_nodes):
                 x = start_x_level + (i * (NODE_WIDTH + GAP_X))
                 y = START_Y + (level * (NODE_HEIGHT + GAP_Y))
                 
-                max_y = max(max_y, y + NODE_HEIGHT)
-                max_x = max(max_x, x + NODE_WIDTH)
-                
-                node_coords[node_id] = {"x": x, "y": y}
+                is_selected = node_id == self.selected_screen_key
                 is_missing = node_id not in screens
                 
-                final_nodes.append({
+                # Estilização baseada em estado
+                bg_color = "#1e293b" if is_selected else ("#fef2f2" if is_missing else "#ffffff")
+                text_color = "white" if is_selected else ("#b91c1c" if is_missing else "black")
+                border_color = "#3b82f6" if is_selected else ("#ef4444" if is_missing else "#cbd5e1")
+                
+                # Label com indicador
+                label_text = f"🚫 {node_id}" if is_missing else node_id
+                
+                final_rf_nodes.append({
                     "id": node_id,
-                    "label": f"🚫 {node_id}" if is_missing else node_id,
-                    "x": x,
-                    "y": y,
-                    "missing": is_missing
+                    "data": {"label": label_text},
+                    "position": {"x": x, "y": y},
+                    "draggable": True,
+                    "style": {
+                        "background": bg_color,
+                        "color": text_color,
+                        "border": f"2px solid {border_color}",
+                        "borderRadius": "8px",
+                        "width": "200px",
+                        "padding": "10px",
+                        "fontSize": "12px",
+                        "fontWeight": "bold",
+                        "boxShadow": "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+                    }
                 })
 
-        self.graph_nodes = final_nodes
-        real_height = max(1000, max_y + 300) 
-        real_width = max(1200, max_x + 300)
-        self.canvas_height = f"{real_height}px"
-
-        svg_parts = ["""
-            <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
-                </marker>
-                <marker id="arrowhead-missing" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
-                </marker>
-            </defs>
-        """]
-
-        for conn in connections:
-            source, target = conn["source"], conn["target"]
-            if source in node_coords and target in node_coords:
-                start, end = node_coords[source], node_coords[target]
-                x1 = start["x"] + (NODE_WIDTH / 2)
-                y1 = start["y"] + NODE_HEIGHT
-                x2 = end["x"] + (NODE_WIDTH / 2)
-                y2 = end["y"]
-                
-                target_missing = target not in screens
-                color = "#ef4444" if target_missing else "#94a3b8"
-                marker = "marker-end='url(#arrowhead-missing)'" if target_missing else "marker-end='url(#arrowhead)'"
-                
-                if y2 < y1:
-                    path_d = f"M {x1} {y1} C {x1} {y1+100}, {x2-100} {y2}, {x2} {y2+(NODE_HEIGHT/2)}"
-                else:
-                    cp1_y = y1 + 50
-                    cp2_y = y2 - 50
-                    path_d = f"M {x1} {y1} C {x1} {cp1_y}, {x2} {cp2_y}, {x2} {y2}"
-
-                svg_parts.append(f'<path d="{path_d}" stroke="{color}" stroke-width="2" fill="none" {marker} />')
-                mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
-                safe_label = conn["label"].replace("<", "").replace(">", "")
-                text_len = len(safe_label) * 6 + 10
-                svg_parts.append(f'<rect x="{mid_x - (text_len/2)}" y="{mid_y - 10}" width="{text_len}" height="20" fill="white" rx="4" opacity="0.9" />')
-                svg_parts.append(f'<text x="{mid_x}" y="{mid_y + 4}" fill="#64748b" font-size="10" text-anchor="middle" font-family="sans-serif">{safe_label}</text>')
-
-        self.svg_content = f'<svg width="{real_width}px" height="{real_height}px" style="position: absolute; top: 0; left: 0; pointer-events: none;">{"".join(svg_parts)}</svg>'
+        self.nodes = final_rf_nodes
+        self.edges = temp_edges
