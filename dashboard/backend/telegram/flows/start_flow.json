@@ -133,10 +133,12 @@
         ]
       ]
     },
-    "teste": {
-      "text": "Nova tela.test..sdfsd",
-      "buttons": []
-    },
+    "teste": [
+      {
+        "text": "Nova mensagem...",
+        "buttons": []
+      }
+    ],
     "sales_pitch_en": [
       {
         "video_url": "BAACAgEAAxkBAAIGLmlG66y91Lpxw3rc9edUiFS0fqv0AAIsBgACbGw4RvxPildUNm2tNgQ",

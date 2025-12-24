@@ -84,8 +84,11 @@ class FlowState(rx.State):
         self.new_screen_name = ""
 
     # --- EDITOR VISUAL (Mantido igual) ---
-    def toggle_editor_mode(self):
-        self.visual_editor_mode = not self.visual_editor_mode
+    def set_editor_mode(self, mode):
+        # Converte a string "visual" ou "json" para booleano
+        self.visual_editor_mode = (mode == "visual")
+        
+        # Se mudou para visual, carrega os blocos a partir do JSON atual
         if self.visual_editor_mode:
             try:
                 data = json.loads(self.current_screen_content)
