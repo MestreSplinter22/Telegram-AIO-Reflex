@@ -1,9 +1,5 @@
 """Centralized API imports for all endpoints."""
 
-# This file ensures all API modules are imported and available
-# Each API module should provide a register_*_routes function
-
-# Import registration functions
 from .healthy import register_healthy_routes
 from .botconfig import register_botconfig_routes
 from .users import register_user_routes
@@ -13,8 +9,9 @@ from .botlogs import register_botlogs_routes
 from .dailystats import register_dailystats_routes
 from ..telegram.routes import register_telegram_routes
 
-# List of all available registration functions
-# Add new registration functions here as APIs are created
+# --- ADICIONE ESTA IMPORTAÇÃO ---
+from .gateways.routes import register_payment_routes 
+
 API_REGISTRARS = [
     register_healthy_routes,
     register_botconfig_routes,
@@ -24,6 +21,8 @@ API_REGISTRARS = [
     register_botlogs_routes,
     register_dailystats_routes,
     register_telegram_routes,
+    # --- REGISTRE AQUI ---
+    register_payment_routes, 
 ]
 
 def register_all_routes(app):

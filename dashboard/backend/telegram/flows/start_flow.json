@@ -99,14 +99,14 @@
       "buttons": [
         [
           {
-            "text": "ENVIAR COMPROVANTE 📤",
-            "url": "https://t.me/SUPINCSTCLUB2"
+            "text": "PAGAR",
+            "callback": "goto_..."
           }
         ],
         [
           {
             "text": "⬅️ Voltar",
-            "callback": "goto_sales_pitch_pt"
+            "callback": "goto_tela_recarga_10"
           }
         ]
       ]
@@ -168,6 +168,24 @@
           ]
         ]
       }
-    ]
+    ],
+    "tela_recarga_10": {
+      "type": "payment",
+      "text": "Recarga de 10 Reais",
+      "amount": 0.01,
+      "gateway": "efi_bank",
+      "buttons": [
+        [
+          {
+            "text": "🔙 Voltar ao Menu",
+            "callback": "goto_webhook_final"
+          }
+        ]
+      ]
+    },
+    "webhook_final": {
+      "text": "Teste pago",
+      "buttons": []
+    }
   }
 }

@@ -1,6 +1,9 @@
+# dashboard/backend/models/models.py
+
 import reflex as rx
 import sqlmodel
 from sqlmodel import Field
+from sqlalchemy import Column, JSON
 from datetime import datetime
 from typing import Optional, Dict, Any
 
@@ -69,8 +72,23 @@ class DailyStatistics(sqlmodel.SQLModel, table=True):
     error_count: int = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class GatewayConfig(rx.Model, table=True):
+    name: str = Field(index=True)  # ex: "efi_bank", "mercadopago"
+    is_active: bool = False
+    is_sandbox: bool = True  # True = Homologação, False = Produção
+    
+    # Credenciais armazenadas em JSON para flexibilidade
+    # Ex: {"client_id": "...", "client_secret": "...", "certificate": "caminho/arquivo.p12"}
+    credentials: Dict[str, Any] = Field(default={}, sa_column=Column(JSON))
+    
+    # Configurações operacionais
+    # Ex: {"min_deposit": 50.00, "webhook_url": "https://seu-app.com/api/webhook/efi"}
+    config: Dict[str, Any] = Field(default={}, sa_column=Column(JSON))
+    
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 # Helper function to create all tables
 def create_all():
     """Create all database tables using Reflex's built-in functionality."""
-    # Reflex 0.8+ gerencia isso automaticamente com 'reflex db init' ou na inicialização
+    # Reflex gerencia isso automaticamente, mas mantemos a função para compatibilidade se necessário
     pass

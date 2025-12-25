@@ -9,6 +9,8 @@ For example, if you want a more basic starting point, you can run:
 reflex init --template blank
 ```
 
+cd /home/isaacdug1/Telegram-AIO-Reflex && source .venv/bin/activate && reflex db migrate
+
 ## About this Template
 
 This template has the following directory structure:
