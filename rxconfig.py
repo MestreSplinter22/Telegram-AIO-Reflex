@@ -1,6 +1,24 @@
 import reflex as rx
 import os
 
+# Caminho para o config do vite que o reflex gera
+vite_conf_path = os.path.join(os.getcwd(), ".web", "vite.config.js")
+
+if os.path.exists(vite_conf_path):
+    with open(vite_conf_path, "r") as f:
+        content = f.read()
+    
+    # Se já não tiver o patch, a gente adiciona
+    if "allowedHosts" not in content:
+        # Inserimos a regra de allowedHosts logo após a definição do port
+        patched_content = content.replace(
+            "port: process.env.PORT,",
+            "port: process.env.PORT, allowedHosts: true,"
+        )
+        with open(vite_conf_path, "w") as f:
+            f.write(patched_content)
+        print("✅ Patch de segurança do Vite aplicado com sucesso!")
+
 tailwind_config = {
     "plugins": ["@tailwindcss/typography"],
     "theme": {
@@ -56,8 +74,10 @@ DB_PATH = os.path.join(BASE_DIR, "..", "telegramaio.db")
 
 config = rx.Config(
     app_name="dashboard",
-    # Usa o caminho absoluto externo
-    db_url=f"sqlite:///{DB_PATH}", #ALTERAR QUANDO NECESSARIO PARA PRODUÇÃO (ATUALMENTE BUSCANDO UMA PASTA ANTES DO PROJETO PARA EVITAR CONFLITO COM HOT RELOADING)
+    cors_allowed_origins=["*"], 
+    api_url="https://api.promosdiarias.shop", 
+    deploy_url="https://front.promosdiarias.shop",
+    db_url=f"sqlite:///{DB_PATH}",
     plugins=[
         rx.plugins.TailwindV4Plugin(tailwind_config),
     ],
