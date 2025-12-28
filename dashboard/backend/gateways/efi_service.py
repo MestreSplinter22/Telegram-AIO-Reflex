@@ -153,3 +153,35 @@ class EfiPixService:
             return response.json()
         
         raise Exception(f"Erro QR Code ({response.status_code}): {response.text}")
+
+    def config_webhook(self, webhook_url: str):
+        """
+        Registra a URL do webhook na Efí para a chave PIX configurada.
+        """
+        token = self.authenticate()
+        key = self.creds.get("pix_key")
+        
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        body = {
+            "webhookUrl": webhook_url
+        }
+
+        # A Efí exige validação de certificado (skip_keys=False é o padrão do método _get_cert_context)
+        with self._get_cert_context() as cert:
+            print(f"🔗 Registrando Webhook Efí na chave {key} para: {webhook_url}")
+            response = requests.put(
+                f"{self.env_url}/v2/webhook/{key}",
+                json=body,
+                headers=headers,
+                cert=cert
+            )
+
+        if response.status_code == 200:
+            print("✅ Webhook Efí configurado com sucesso!")
+            return response.json()
+        
+        raise Exception(f"Erro Configurar Webhook Efí ({response.status_code}): {response.text}")

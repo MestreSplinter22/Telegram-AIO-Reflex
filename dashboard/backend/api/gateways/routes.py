@@ -193,6 +193,24 @@ async def suitpay_webhook(request: Request):
     print(f"⚠️ Transação não encontrada para requestNumber: {request_number}")
     return {"status": "not_found"}
 
+@router.get("/setup-efi-webhook")
+async def setup_efi():
+    with rx.session() as session:
+        gateway = session.query(GatewayConfig).filter(GatewayConfig.name == "efi_bank").first()
+        if not gateway:
+            return {"error": "Gateway Efí não encontrada no banco"}
+        
+        service = EfiPixService(gateway)
+        # IMPORTANTE: Substitua pela sua URL pública real (ngrok ou produção)
+        # Não use localhost aqui
+        minha_url = "https://csavy-2804-3a88-ffff-d800-216-3eff-fe8f-c35.a.free.pinggy.link/api/webhook"
+        
+        try:
+            res = service.config_webhook(minha_url)
+            return res
+        except Exception as e:
+            return {"error": str(e)}
+
 # --- WEBHOOK EFI (MANTIDO) ---
 @router.post("/webhook/efi")
 async def efi_webhook(request: Request):

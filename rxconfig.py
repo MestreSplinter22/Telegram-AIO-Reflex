@@ -75,9 +75,9 @@ DB_PATH = os.path.join(BASE_DIR, "..", "telegramaio.db")
 config = rx.Config(
     app_name="dashboard",
     cors_allowed_origins=["*"], 
-    api_url="https://api.promosdiarias.shop", 
-    deploy_url="https://front.promosdiarias.shop",
-    db_url=f"sqlite:///{DB_PATH}",
+    #api_url="https://api.promosdiarias.shop", 
+    #deploy_url="https://front.promosdiarias.shop",
+    db_url=f"postgresql://casaos:casaos@100.115.92.206:5432/casaos",
     plugins=[
         rx.plugins.TailwindV4Plugin(tailwind_config),
     ],

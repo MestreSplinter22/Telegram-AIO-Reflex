@@ -8,9 +8,10 @@ from .giftcards import register_giftcards_routes
 from .botlogs import register_botlogs_routes
 from .dailystats import register_dailystats_routes
 from ..telegram.routes import register_telegram_routes
-
-# --- ADICIONE ESTA IMPORTAÇÃO ---
 from .gateways.routes import register_payment_routes 
+
+# --- NOVA IMPORTAÇÃO ---
+from .webhook import register_webhook_routes
 
 API_REGISTRARS = [
     register_healthy_routes,
@@ -21,8 +22,9 @@ API_REGISTRARS = [
     register_botlogs_routes,
     register_dailystats_routes,
     register_telegram_routes,
-    # --- REGISTRE AQUI ---
-    register_payment_routes, 
+    register_payment_routes,
+    # --- NOVO REGISTRO ---
+    register_webhook_routes,
 ]
 
 def register_all_routes(app):
