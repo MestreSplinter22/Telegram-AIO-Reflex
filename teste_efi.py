@@ -8,7 +8,7 @@ config_mock.is_sandbox = False # PRODUÇÃO
 config_mock.credentials = {
     "client_id": "Client_Id_2d0a029fbb64d23dcd8fc0af4046f26e4e603046",
     "client_secret": "Client_Secret_c36a41b56fa508b9b2400346b30a9bf7fb03881e",
-    "certificate_path": "dashboard/backend/api/gateways/efi/credencial/producao-730674-BOTtelegam.p12",
+    "certificate_path": "dashboard/backend/api/gateways/efi/credencial/producao.p12",
     "certificate_password": "", # Se tiver senha
     "pix_key": "5726ec81-0287-4657-b68d-90f6d9629b2e" # Sua chave atual
 }
